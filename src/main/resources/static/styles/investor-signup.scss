@@ -1,0 +1,83 @@
+/* =============================================
+   LebVest — Investor Signup Email Styles
+   Extends email-base.scss with template-specific
+   styles for the investor signup email pair.
+   ============================================= */
+
+@import 'email-base';
+
+/* ---------- Info Table (key/value rows) ---------- */
+.email-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: $space-sm 0 $space-md;
+}
+
+.email-info-table tr {
+  border-bottom: 1px solid $border-color;
+}
+
+.email-info-table tr:last-child {
+  border-bottom: none;
+}
+
+.email-info-table td {
+  padding: $space-sm 0;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.email-info-table__label {
+  color: $text-secondary;
+  width: 45%;
+  padding-right: $space-md;
+}
+
+.email-info-table__value {
+  color: $text;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* ---------- Steps List (What Happens Next) ---------- */
+.email-steps {
+  width: 100%;
+  border-collapse: collapse;
+  margin: $space-md 0;
+}
+
+.email-steps tr + tr {
+  border-top: none;
+}
+
+.email-steps td {
+  padding: $space-sm 0;
+  vertical-align: top;
+}
+
+.email-steps__number {
+  width: 36px;
+  height: 36px;
+  background-color: $primary;
+  color: $text-inverse;
+  font-family: $font-display;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 50%;
+  padding: 0;
+  line-height: 36px;
+}
+
+.email-steps__text {
+  padding-left: $space-md;
+  font-size: 14px;
+  color: $text-secondary;
+  line-height: 1.6;
+
+  strong {
+    color: $text;
+    font-size: 15px;
+  }
+}

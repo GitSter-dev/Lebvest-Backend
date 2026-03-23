@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: lebvest
+  docker:
+    compose:
+      enabled: false
+
+server:
+  servlet:
+    context-path: /api/v1

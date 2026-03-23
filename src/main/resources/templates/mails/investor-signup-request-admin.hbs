@@ -1,0 +1,124 @@
+{{#>layout}}
+
+<h1>New Investor Signup Request</h1>
+<p>A new investor has submitted a signup request and is awaiting review.</p>
+
+<hr class="email-divider" />
+
+<!-- Investor Overview Card -->
+<div class="email-card">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td style="padding-bottom:8px;">
+        <span class="email-badge email-badge--primary">New Request</span>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h2 style="margin:0 0 4px 0;">{{firstName}} {{lastName}}</h2>
+        <p style="margin:0;color:#5A6A7A;">{{email}} &middot; {{phoneNumber}}</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- Personal Details -->
+<h2>Personal Information</h2>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-info-table">
+  <tr>
+    <td class="email-info-table__label">Date of Birth</td>
+    <td class="email-info-table__value">{{dateOfBirth}}</td>
+  </tr>
+  <tr>
+    <td class="email-info-table__label">Nationality</td>
+    <td class="email-info-table__value">{{nationality}}</td>
+  </tr>
+  <tr>
+    <td class="email-info-table__label">Country of Residence</td>
+    <td class="email-info-table__value">{{countryOfResidence}}</td>
+  </tr>
+  <tr>
+    <td class="email-info-table__label">Address</td>
+    <td class="email-info-table__value">{{address}}</td>
+  </tr>
+</table>
+
+<hr class="email-divider" />
+
+<!-- Economic Profile -->
+<h2>Economic Profile</h2>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-info-table">
+  <tr>
+    <td class="email-info-table__label">Occupation</td>
+    <td class="email-info-table__value">{{occupation}}</td>
+  </tr>
+  <tr>
+    <td class="email-info-table__label">Source of Funds</td>
+    <td class="email-info-table__value">{{sourceOfFunds}}</td>
+  </tr>
+  <tr>
+    <td class="email-info-table__label">Est. Annual Income</td>
+    <td class="email-info-table__value">${{estimatedAnnualIncome}}</td>
+  </tr>
+</table>
+
+<hr class="email-divider" />
+
+<!-- Compliance -->
+<h2>Compliance</h2>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-info-table">
+  <tr>
+    <td class="email-info-table__label">PEP Status</td>
+    <td class="email-info-table__value">
+      {{#if pep}}<span class="email-badge email-badge--secondary">Yes</span>{{else}}No{{/if}}
+    </td>
+  </tr>
+  <tr>
+    <td class="email-info-table__label">Family PEP</td>
+    <td class="email-info-table__value">
+      {{#if relativeOrFamilyPepStatus}}<span class="email-badge email-badge--secondary">Yes</span>{{else}}No{{/if}}
+    </td>
+  </tr>
+  <tr>
+    <td class="email-info-table__label">US Person (FATCA)</td>
+    <td class="email-info-table__value">
+      {{#if isUsPerson}}<span class="email-badge email-badge--secondary">Yes</span>{{else}}No{{/if}}
+    </td>
+  </tr>
+  <tr>
+    <td class="email-info-table__label">Tax ID</td>
+    <td class="email-info-table__value">{{taxIdNumber}}</td>
+  </tr>
+</table>
+
+<hr class="email-divider" />
+
+<!-- Investment Profile -->
+<h2>Investment Profile</h2>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-info-table">
+  <tr>
+    <td class="email-info-table__label">Risk Tolerance</td>
+    <td class="email-info-table__value">{{riskTolerance}}</td>
+  </tr>
+  <tr>
+    <td class="email-info-table__label">Years of Experience</td>
+    <td class="email-info-table__value">{{yearsOfExperience}}</td>
+  </tr>
+</table>
+
+<hr class="email-divider" />
+
+<!-- CTA -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td align="center" style="padding:16px 0 0;">
+      <a href="{{reviewUrl}}" class="email-btn email-btn--primary">Review Application</a>
+    </td>
+  </tr>
+</table>
+
+<p style="text-align:center;font-size:13px;color:#8B97A5;margin-top:16px;">
+  Submitted on {{submittedAt}}
+</p>
+
+{{/layout}}

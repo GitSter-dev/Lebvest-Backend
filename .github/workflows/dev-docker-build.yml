@@ -1,0 +1,44 @@
+name: Dev Docker Compose Build
+
+on:
+  workflow_run:
+    workflows: [ "Dev Integration Tests" ]
+    types: [ completed ]
+    branches: [ dev ]
+
+jobs:
+  docker-build:
+    name: Build Docker Compose Dev Cluster
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file from secrets
+        run: |
+          cat <<EOF > .env.dev
+          POSTGRES_USER=${{ secrets.DEV_POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.DEV_POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.DEV_POSTGRES_DB }}
+          POSTGRES_URL=${{ secrets.DEV_POSTGRES_URL }}
+          MINIO_ROOT_USER=${{ secrets.DEV_MINIO_ROOT_USER }}
+          MINIO_ROOT_PASSWORD=${{ secrets.DEV_MINIO_ROOT_PASSWORD }}
+          AWS_ACCESS_KEY=${{ secrets.DEV_AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY=${{ secrets.DEV_AWS_SECRET_KEY }}
+          S3_REGION=${{ secrets.DEV_S3_REGION }}
+          S3_URL=${{ secrets.DEV_S3_URL }}
+          S3_BUCKET_NAME=${{ secrets.DEV_S3_BUCKET_NAME }}
+          EOF
+
+      - name: Build Docker Compose dev cluster
+        run: docker compose -f docker-compose.dev.yaml --env-file .env.dev build
+
+      - name: Start cluster and verify health
+        run: |
+          docker compose -f docker-compose.dev.yaml --env-file .env.dev up -d
+          echo "Waiting for services to start..."
+          sleep 30
+          docker compose -f docker-compose.dev.yaml ps
+          docker compose -f docker-compose.dev.yaml --env-file .env.dev down

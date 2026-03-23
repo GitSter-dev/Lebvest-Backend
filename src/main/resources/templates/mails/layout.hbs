@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <meta name="format-detection" content="telephone=no,address=no,email=no,date=no,url=no" />
+  <title>LebVest</title>
+
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:AllowPNG/>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    {{{styles}}}
+  </style>
+</head>
+<body>
+  <!-- Preview text (hidden) -->
+  {{#if previewText}}
+  <div style="display:none;font-size:1px;color:#F8FAFB;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+    {{previewText}}
+  </div>
+  {{/if}}
+
+  <!-- Email Wrapper -->
+  <table role="presentation" class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td align="center">
+        <!--[if mso]>
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600"><tr><td>
+        <![endif]-->
+
+        <!-- Container -->
+        <table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+
+          <!-- Header -->
+          <tr>
+            <td class="email-header">
+              <h1 class="email-header__logo">LebVest</h1>
+              <p class="email-header__tagline">Smart Investing, Rooted in Lebanon</p>
+            </td>
+          </tr>
+
+          <!-- Body (child templates inject content here) -->
+          <tr>
+            <td class="email-body">
+              {{> @partial-block }}
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="email-footer">
+              <p>&copy; {{year}} LebVest. All rights reserved.</p>
+              <p>Beirut, Lebanon</p>
+              <p style="margin-top:12px;">
+                {{!-- <a href="{{unsubscribeUrl}}">Unsubscribe</a> &middot;
+                <a href="{{preferencesUrl}}">Email Preferences</a> &middot;
+                <a href="{{privacyUrl}}">Privacy Policy</a> --}}
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Container -->
+
+        <!--[if mso]>
+        </td></tr></table>
+        <![endif]-->
+      </td>
+    </tr>
+  </table>
+  <!-- /Email Wrapper -->
+</body>
+</html>

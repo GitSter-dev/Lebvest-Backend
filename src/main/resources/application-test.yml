@@ -1,0 +1,27 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: false
+  flyway:
+    enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration
+
+app:
+  s3:
+    bucket-name: test-bucket
+
+lebvest:
+  mail:
+    admin-email: admin@test.com
+    from: noreply@test.com
+    subjects:
+      admin-notification: "New Investor Signup Request: {firstName} {lastName}"
+      investor-confirmation: "We've Received Your Signup Request"
+  frontend:
+    admin-url: http://localhost:4026/admin
+    frontend-url: http://localhost:4025

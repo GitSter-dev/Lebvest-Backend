@@ -1,0 +1,46 @@
+spring:
+  cloud:
+    aws:
+      s3:
+        region: ${S3_REGION}
+  flyway:
+    enabled: true
+    locations: classpath:db/migrations
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    url: ${POSTGRES_URL}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+  rabbitmq:
+    ## to be determined
+    host: ${RABBITMQ_DEFAULT_HOST}
+    username: ${RABBITMQ_DEFAULT_USERNAME}
+    password: ${RABBITMQ_DEFAULT_PASS}
+    virtual-host: /
+  mail:
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+rabbitmq:
+  queues:
+    investor-signup-request-email: investor.signup.email
+    investor-topic-exchange: investor.exchange
+    admin-topic-exchange: admin.exchange
+    investor-signup-request-admin-email: admin.investor.signup.email
+    investor-signup-request-documents: investor.signup.documents
+
+app:
+  s3:
+    bucket-name: ${S3_BUCKET_NAME}

@@ -1,0 +1,83 @@
+{{#>layout}}
+
+<h1>Thank You, {{firstName}}!</h1>
+<p>
+  We've received your investor signup request and our team is now reviewing your application.
+  You'll hear back from us shortly.
+</p>
+
+<hr class="email-divider" />
+
+<!-- Request Summary Card -->
+<div class="email-card">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td>
+        <span class="email-badge email-badge--primary">Request Received</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top:12px;">
+        <p class="email-card__title">Your Details</p>
+      </td>
+    </tr>
+  </table>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-info-table">
+    <tr>
+      <td class="email-info-table__label">Name</td>
+      <td class="email-info-table__value">{{firstName}} {{lastName}}</td>
+    </tr>
+    <tr>
+      <td class="email-info-table__label">Email</td>
+      <td class="email-info-table__value">{{email}}</td>
+    </tr>
+    <tr>
+      <td class="email-info-table__label">Phone</td>
+      <td class="email-info-table__value">{{phoneNumber}}</td>
+    </tr>
+    <tr>
+      <td class="email-info-table__label">Nationality</td>
+      <td class="email-info-table__value">{{nationality}}</td>
+    </tr>
+    <tr>
+      <td class="email-info-table__label">Risk Tolerance</td>
+      <td class="email-info-table__value">{{riskTolerance}}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- What's Next -->
+<h2>What Happens Next?</h2>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-steps">
+  <tr>
+    <td class="email-steps__number">1</td>
+    <td class="email-steps__text">
+      <strong>Document Verification</strong><br />
+      Our compliance team will review the documents you submitted.
+    </td>
+  </tr>
+  <tr>
+    <td class="email-steps__number">2</td>
+    <td class="email-steps__text">
+      <strong>Background Check</strong><br />
+      We perform standard KYC/AML checks as required by regulation.
+    </td>
+  </tr>
+  <tr>
+    <td class="email-steps__number">3</td>
+    <td class="email-steps__text">
+      <strong>Account Activation</strong><br />
+      Once approved, you'll receive an email containing a link to set your password and start your investment journey!
+    </td>
+  </tr>
+</table>
+
+<hr class="email-divider" />
+
+<p style="text-align:center;">
+  Questions? Reply to this email or reach us at
+  <a href="mailto:support@lebvest.com">support@lebvest.com</a>
+</p>
+
+{{/layout}}

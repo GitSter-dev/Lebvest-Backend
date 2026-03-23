@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    url: ${POSTGRES_URL}
+    password: ${POSTGRES_PASSWORD}
+    username: ${POSTGRES_USER}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: false
+  mail:
+    host: mailpit
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration
+  cloud:
+    aws:
+      s3:
+        region: ${S3_REGION}
+        endpoint: ${S3_URL}
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+lebvest:
+  mail:
+    admin-email: admin@lebvest.com
+    from: noreply@lebvest.com
+    subjects:
+      admin-notification: New Investor Signup Request
+      investor-confirmation:  Your request has been submitted
+  frontend:
+    admin-url:  http://localhost:4026/admin
+    frontend-url: http://localhost:4025
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+app:
+  s3:
+    bucket-name: lebvest-uploads

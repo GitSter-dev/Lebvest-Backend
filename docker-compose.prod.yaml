@@ -1,0 +1,16 @@
+services:
+  app:
+    image: ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      args:
+        APP_VERSION: ${APP_VERSION:-dev}
+    environment:
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_URL: ${POSTGRES_URL}
+      RABBITMQ_DEFAULT_USERNAME: ${RABBITMQ_DEFAULT_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
