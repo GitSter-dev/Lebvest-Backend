@@ -81,3 +81,7 @@ app:
   frontend:
     ## to be changed
     base-url: http://localhost:4200
+
+server:
+  servlet:
+    context-path: /api/v1
