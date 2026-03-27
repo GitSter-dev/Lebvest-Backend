@@ -18,6 +18,11 @@ spring:
   docker:
     compose:
       enabled: false
+  rabbitmq:
+    listener:
+      simple:
+        # Avoid long consumer recovery when the broker is stopped at context shutdown (Testcontainers).
+        force-stop: true
   mail:
     properties:
       mail:

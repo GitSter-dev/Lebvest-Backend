@@ -29,10 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>Requires Docker. Run: {@code ./mvnw -Dtest=InvestorSignupApplyProdIntegrationTest test}</p>
  */
 @DisplayName("Investor Signup Application API (prod)")
+// @Testcontainers must register before @SpringBootTest: AfterAll runs in reverse order, so the context
+// closes (stops AMQP listeners) before Ryuk stops the broker. The opposite order causes EOF / connection
+// refused spam and can leave Surefire’s fork alive until its 30s watchdog.
+@Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"prod", "investor-api-it-prod"})
 @Import({InvestorSignupS3BucketTestConfiguration.class, IntegrationTestSecurityConfiguration.class})
-@Testcontainers
 class InvestorSignupApplyProdIntegrationTest extends InvestorSignupProdApiContainersConfiguration {
 
     @LocalServerPort

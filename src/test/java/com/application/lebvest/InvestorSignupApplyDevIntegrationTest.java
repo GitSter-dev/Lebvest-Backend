@@ -28,10 +28,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>Requires Docker. Run: {@code ./mvnw -Dtest=InvestorSignupApplyIntegrationTest test}</p>
  */
 @DisplayName("Investor Signup Application API (dev)")
+// @Testcontainers before @SpringBootTest so AfterAll closes Spring before containers stop (clean teardown).
+@Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"dev", "investor-api-it"})
 @Import({InvestorSignupS3BucketTestConfiguration.class, IntegrationTestSecurityConfiguration.class})
-@Testcontainers
 class InvestorSignupApplyDevIntegrationTest extends InvestorSignupApiContainersConfiguration {
 
     @LocalServerPort
