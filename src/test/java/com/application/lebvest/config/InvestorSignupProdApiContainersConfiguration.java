@@ -20,6 +20,10 @@ public abstract class InvestorSignupProdApiContainersConfiguration extends Inves
 
     @DynamicPropertySource
     static void registerRabbitProperties(DynamicPropertyRegistry registry) {
+        // Prod YAML sets spring.rabbitmq.addresses; that wins over host/port and would otherwise
+        // keep a real Amazon MQ URL from env / Secrets Manager. Force the Testcontainer broker.
+        registry.add("spring.rabbitmq.addresses", () ->
+                RABBITMQ.getHost() + ":" + RABBITMQ.getMappedPort(5672));
         registry.add("spring.rabbitmq.host", RABBITMQ::getHost);
         registry.add("spring.rabbitmq.port", () -> String.valueOf(RABBITMQ.getMappedPort(5672)));
         registry.add("spring.rabbitmq.username", () -> "guest");
