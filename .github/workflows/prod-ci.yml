@@ -56,6 +56,14 @@ jobs:
           echo -e "Host *\n  StrictHostKeyChecking no\n  IdentityFile ~/.ssh/ec2.pem" > ~/.ssh/config
           chmod 600 ~/.ssh/config
 
+      - name: Verify EC2 SSH reachability
+        run: |
+          if ! timeout 8 bash -c "cat < /dev/null > /dev/tcp/${EC2_HOST}/22"; then
+            echo "Cannot reach ${EC2_HOST}:22 from GitHub runner."
+            echo "Check secrets.EC2_HOST, instance state/public IP, route table, NACL, and SG ingress for SSH."
+            exit 1
+          fi
+
       - name: Copy compose file to EC2
         run: |
           ssh "$EC2_USER@$EC2_HOST" 'mkdir -p ~/lebvest'
