@@ -95,14 +95,15 @@ public class DevInvestorAuthenticationService implements InvestorAuthenticationS
 
         Map<String, String> sourceOfFundsDocumentsPresignedUrls =
                 IntStream.range(0, sourceOfFundsDocumentsKeys.size())
-                        .mapToObj(i -> Map.entry(
-                                requestDto.sourceOfFundsDocuments().get(i),
-                                sourceOfFundsDocumentsKeys.get(i)
-                        ))
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue
-                        ));
+                        .mapToObj(i -> {
+                            String filename = requestDto.sourceOfFundsDocuments().get(i);
+                            String key = sourceOfFundsDocumentsKeys.get(i);
+                            String url = s3Service.generatePresignedUrl(key, getContentType(filename))
+                                    .url()
+                                    .toString();
+                            return Map.entry(filename, url);
+                        })
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         log.info("Source of funds document presigned urls: {}", sourceOfFundsDocumentsPresignedUrls);
         return ApiResponseDto.ok(
                 InvestorSignupApplicationResponseDto
