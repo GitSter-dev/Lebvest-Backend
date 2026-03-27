@@ -3,9 +3,9 @@ management:
     metrics:
       export:
         enabled: false
-    tracing:
-      export:
-        enabled: false
+  tracing:
+    export:
+      enabled: false
 
 server:
   servlet:
@@ -18,8 +18,22 @@ spring:
   docker:
     compose:
       enabled: false
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enabled: false
 
 app:
+  rabbitmq:
+    queues:
+      investor-signup-emails: lebvest.q.investor-signup-emails
+      admin-emails: lebvest.q.admin-emails
+    exchanges:
+      investor-emails: lebvest.x.investor-emails
+      admin-emails: lebvest.x.admin-emails
   s3:
     bucket-name: lebvest-bucket
   mail:

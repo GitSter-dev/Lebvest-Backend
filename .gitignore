@@ -35,3 +35,15 @@ build/
 .cursorrules
 .agent/rules
 scripts/
+
+### OpenTofu (Terraform-compatible IaC) ###
+.terraform/
+crash.*.log
+override.tf
+*_override.tf
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.*
+!*.tfvars.example
+.terraform.*

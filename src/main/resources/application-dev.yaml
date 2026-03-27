@@ -12,6 +12,8 @@ server:
     context-path: /api/v1
 
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration
 
   application:
     name: lebvest
@@ -35,7 +37,7 @@ spring:
         access-key: ${MINIO_ROOT_USER}
         secret-key: ${MINIO_ROOT_PASSWORD}
   mail:
-    host: localhost
+    host: mailpit
     port: 1025
     properties:
       mail:
@@ -52,6 +54,9 @@ app:
     subjects:
       investor-signup-confirmation: "LebVest – Your Signup Application Has Been Received"
       admin-signup-notification: "LebVest – New Investor Signup Application"
+    titles:
+      investor-signup-confirmation: "Application Received"
+      admin-signup-notification: "New Investor Application"
   template:
     styles-path: static/styles
     mails-path: /templates/mails

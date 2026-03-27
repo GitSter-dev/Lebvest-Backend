@@ -1,0 +1,74 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+spring:
+  config:
+    import: "aws-secretsmanager:lebvest/app-secrets"
+  rabbitmq:
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    virtual-host: /
+    addresses: ${RABBITMQ_URL}
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enabled: true
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+
+  cloud:
+    aws:
+      s3:
+        path-style-access-enabled: true
+      region:
+        static: us-east-1
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    url: ${POSTGRES_URL}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+app:
+  rabbitmq:
+    queues:
+      investor-signup-emails: lebvest.queue.investor-signup-emails
+      admin-emails: lebvest.queue.admin-emails
+    exchanges:
+      investor-emails: lebvest.x.investor-emails
+      admin-emails: lebvest.x.admin-emails
+  s3:
+    bucket-name: lebvest-bucket
+  mail:
+    ## to be changed
+    from: ${MAIL_FROM}
+    admin-email: ${ADMIN_EMAIL}
+    subjects:
+      investor-signup-confirmation: "LebVest – Your Signup Application Has Been Received"
+      admin-signup-notification: "LebVest – New Investor Signup Application"
+    titles:
+      investor-signup-confirmation: "Application Received"
+      admin-signup-notification: "New Investor Application"
+  template:
+    styles-path: static/styles
+    mails-path: /templates/mails
+  frontend:
+    ## to be changed
+    base-url: http://localhost:4200

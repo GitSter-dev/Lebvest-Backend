@@ -1,0 +1,23 @@
+aws_region        = "us-east-1"
+app_name          = "lebvest"
+ec2_instance_type = "t3.small"
+ec2_key_pair_name = "your-pem-key"
+ec2_ami           = "ami-0c02fb55956c7d316" # Amazon Linux 2023, us-east-1
+
+rds_instance_class = "db.t3.micro"
+db_name            = "lebvest"
+db_username        = "lebvest_admin"
+db_password        = "CHANGE_ME"
+
+mq_instance_type = "mq.t3.micro"
+mq_username      = "lebvest_mq"
+mq_password      = "CHANGE_ME"
+
+s3_bucket_name = "lebvest-assets"
+
+mail_host     = "smtp.gmail.com"
+mail_port     = 587
+mail_username = "your-smtp-user"
+mail_password = "CHANGE_ME"
+mail_from     = "noreply@example.com"
+admin_email   = "admin@example.com"
