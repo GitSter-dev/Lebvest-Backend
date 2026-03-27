@@ -7,6 +7,8 @@ on:
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/lebvest
   IMAGE_TAG: ${{ github.sha }}
+  # Keep in sync with Terraform variable docker_compose_version (variables.tf).
+  DOCKER_COMPOSE_VERSION: v2.29.7
 
 jobs:
   # ── 1. Integration tests (prod profile) ────────────────────────────
@@ -78,14 +80,21 @@ jobs:
           cd ~/lebvest
           export DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME}"
           export IMAGE_TAG="${IMAGE_TAG}"
+          export DOCKER_COMPOSE_VERSION="${DOCKER_COMPOSE_VERSION}"
           docker pull "\${DOCKERHUB_USERNAME}/lebvest:\${IMAGE_TAG}"
+          COMPOSE_BIN=/usr/local/bin/docker-compose
           if docker compose version >/dev/null 2>&1; then
             COMPOSE=(docker compose)
+          elif [ -x "\$COMPOSE_BIN" ]; then
+            COMPOSE=("\$COMPOSE_BIN")
           elif command -v docker-compose >/dev/null 2>&1; then
             COMPOSE=(docker-compose)
           else
-            echo "Install Docker Compose v2 ('docker compose') or standalone 'docker-compose' (see Terraform EC2 user_data)." >&2
-            exit 1
+            echo "Installing Docker Compose \${DOCKER_COMPOSE_VERSION} to \${COMPOSE_BIN}..."
+            curl -fsSL "https://github.com/docker/compose/releases/download/\${DOCKER_COMPOSE_VERSION}/docker-compose-linux-\$(uname -m)" -o /tmp/docker-compose
+            sudo mv /tmp/docker-compose "\$COMPOSE_BIN"
+            sudo chmod +x "\$COMPOSE_BIN"
+            COMPOSE=("\$COMPOSE_BIN")
           fi
           "\${COMPOSE[@]}" -f compose.prod.yaml down --remove-orphans || true
           "\${COMPOSE[@]}" -f compose.prod.yaml up -d

@@ -17,7 +17,11 @@ public class InvestorSignupApplication {
 
     @Id
     @EqualsAndHashCode.Include
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "investor_signup_application_seq_gen")
+    @SequenceGenerator(
+            name = "investor_signup_application_seq_gen",
+            sequenceName = "investor_signup_application_id_seq",
+            allocationSize = 1)
     private Long id;
 
     @Column(nullable = false)
