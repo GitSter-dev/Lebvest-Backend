@@ -1,4 +1,11 @@
 management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+    tracing:
+      export:
+        enabled: false
   endpoints:
     web:
       exposure:
