@@ -27,6 +27,12 @@ variable "ec2_key_pair_name" {
   type        = string
 }
 
+variable "docker_compose_version" {
+  description = "Docker Compose v2 release tag (git tag) installed on EC2 for deploy scripts"
+  type        = string
+  default     = "v2.29.7"
+}
+
 variable "rds_instance_class" {
   description = "RDS instance class"
   type        = string

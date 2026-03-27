@@ -71,8 +71,16 @@ jobs:
           export DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME}"
           export IMAGE_TAG="${IMAGE_TAG}"
           docker pull "\${DOCKERHUB_USERNAME}/lebvest:\${IMAGE_TAG}"
-          docker compose -f compose.prod.yaml down --remove-orphans || true
-          docker compose -f compose.prod.yaml up -d
+          if docker compose version >/dev/null 2>&1; then
+            COMPOSE=(docker compose)
+          elif command -v docker-compose >/dev/null 2>&1; then
+            COMPOSE=(docker-compose)
+          else
+            echo "Install Docker Compose v2 ('docker compose') or standalone 'docker-compose' (see Terraform EC2 user_data)." >&2
+            exit 1
+          fi
+          "\${COMPOSE[@]}" -f compose.prod.yaml down --remove-orphans || true
+          "\${COMPOSE[@]}" -f compose.prod.yaml up -d
           REMOTE
 
       - name: Poll for healthy container
