@@ -27,11 +27,10 @@ spring:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
     properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enabled: true
+      # Jakarta Mail keys (not starttls.enabled — that never enables STARTTLS; Gmail then returns 530).
+      "[mail.smtp.auth]": "true"
+      "[mail.smtp.starttls.enable]": "true"
+      "[mail.smtp.starttls.required]": "true"
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
 
