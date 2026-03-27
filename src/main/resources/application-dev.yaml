@@ -1,0 +1,59 @@
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    export:
+      enabled: false
+
+server:
+  servlet:
+    context-path: /api/v1
+
+spring:
+
+  application:
+    name: lebvest
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    url: ${POSTGRES_URL}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+  cloud:
+    aws:
+      s3:
+        endpoint: http://localhost:9000
+        path-style-access-enabled: true
+      region:
+        static: us-east-1
+      credentials:
+        access-key: ${MINIO_ROOT_USER}
+        secret-key: ${MINIO_ROOT_PASSWORD}
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enabled: false
+app:
+  s3:
+    bucket-name: lebvest-bucket
+  mail:
+    from: noreply@lebvest.com
+    admin-email: admin@lebvest.com
+    subjects:
+      investor-signup-confirmation: "LebVest – Your Signup Application Has Been Received"
+      admin-signup-notification: "LebVest – New Investor Signup Application"
+  template:
+    styles-path: static/styles
+    mails-path: /templates/mails
+  frontend:
+    base-url: http://localhost:4200

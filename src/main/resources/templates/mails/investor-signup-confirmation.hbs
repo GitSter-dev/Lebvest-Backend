@@ -1,0 +1,31 @@
+{{#> layout}}
+    {{#*inline "body"}}
+    <span class="confirmation-badge">✓ Application Received</span>
+    <p>Dear {{firstName}} {{lastName}},</p>
+    <p>Thank you for your interest in LebVest. Your signup application has been successfully submitted and is now under review.</p>
+    <p>Here is a summary of the details you provided:</p>
+    <table class="details-table">
+        <tr>
+            <td class="label">Name</td>
+            <td class="value">{{firstName}} {{lastName}}</td>
+        </tr>
+        <tr>
+            <td class="label">Email</td>
+            <td class="value">{{email}}</td>
+        </tr>
+        <tr>
+            <td class="label">Phone</td>
+            <td class="value">{{phoneNumber}}</td>
+        </tr>
+        <tr>
+            <td class="label">Nationality</td>
+            <td class="value">{{nationality}}</td>
+        </tr>
+        <tr>
+            <td class="label">Country of Residence</td>
+            <td class="value">{{countryOfResidence}}</td>
+        </tr>
+    </table>
+    <p>Our team will review your application and supporting documents. You will be notified once a decision has been made.</p>
+    {{/inline}}
+{{/layout}}

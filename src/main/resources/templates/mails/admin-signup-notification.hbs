@@ -1,0 +1,35 @@
+{{#> layout}}
+    {{#*inline "body"}}
+    <span class="notification-badge">New Application</span>
+    <p>A new investor signup application has been submitted.</p>
+    <table class="details-table">
+        <tr>
+            <td class="label">Name</td>
+            <td class="value">{{firstName}} {{lastName}}</td>
+        </tr>
+        <tr>
+            <td class="label">Email</td>
+            <td class="value">{{email}}</td>
+        </tr>
+        <tr>
+            <td class="label">Phone</td>
+            <td class="value">{{phoneNumber}}</td>
+        </tr>
+        <tr>
+            <td class="label">Nationality</td>
+            <td class="value">{{nationality}}</td>
+        </tr>
+        <tr>
+            <td class="label">Country of Residence</td>
+            <td class="value">{{countryOfResidence}}</td>
+        </tr>
+        <tr>
+            <td class="label">Application ID</td>
+            <td class="value">{{applicationId}}</td>
+        </tr>
+    </table>
+    <div class="action-section">
+        <a href="{{adminDashboardUrl}}" class="btn">Review in Dashboard</a>
+    </div>
+    {{/inline}}
+{{/layout}}

@@ -1,0 +1,16 @@
+/* Admin signup notification specific styles */
+.notification-badge {
+    display: inline-block;
+    background-color: #e3f2fd;
+    color: #1565c0;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.action-section {
+    margin-top: 24px;
+    text-align: center;
+}
