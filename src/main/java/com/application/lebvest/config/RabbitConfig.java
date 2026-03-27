@@ -8,20 +8,39 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ConfigurationCondition;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * AMQP topology for prod. Gated on {@code spring.rabbitmq.host} (not {@code ConnectionFactory}) because
+ * AMQP topology for prod. Gated on broker connection properties (host or addresses) because
  * component-scanned configs run before {@code RabbitAutoConfiguration} registers the factory bean.
+ * Prod uses {@code spring.rabbitmq.addresses} (Amazon MQ); tests/containers often use {@code host}.
  */
 @Configuration
-@ConditionalOnProperty(name = "spring.rabbitmq.host")
+@Conditional(RabbitConfig.RabbitBrokerConfigured.class)
 @EnableConfigurationProperties(AppRabbitMqProperties.class)
 public class RabbitConfig {
+
+    static final class RabbitBrokerConfigured extends AnyNestedCondition {
+
+        RabbitBrokerConfigured() {
+            super(ConfigurationCondition.ConfigurationPhase.PARSE_CONFIGURATION);
+        }
+
+        @ConditionalOnProperty(prefix = "spring.rabbitmq", name = "host")
+        static class OnHost {
+        }
+
+        @ConditionalOnProperty(prefix = "spring.rabbitmq", name = "addresses")
+        static class OnAddresses {
+        }
+    }
 
     @Bean
     public MessageConverter rabbitMessageConverter(JsonMapper jsonMapper) {
