@@ -65,6 +65,16 @@ output "ec2_public_dns" {
   value       = aws_instance.app.public_dns
 }
 
+output "ec2_instance_id" {
+  description = "EC2 instance ID"
+  value       = aws_instance.app.id
+}
+
+output "ec2_deploy_target" {
+  description = "SSM tag value used by CI to target the production instance"
+  value       = aws_instance.app.tags["DeployTarget"]
+}
+
 output "rds_endpoint" {
   description = "RDS hostname only (use rds.endpoint for host:port)"
   value       = aws_db_instance.postgres.address
@@ -83,6 +93,11 @@ output "mq_console_url" {
 output "secrets_manager_arn" {
   description = "ARN of the Secrets Manager secret"
   value       = aws_secretsmanager_secret.app.arn
+}
+
+output "secrets_manager_name" {
+  description = "Secrets Manager name consumed by the production app"
+  value       = aws_secretsmanager_secret.app.name
 }
 
 output "s3_assets" {

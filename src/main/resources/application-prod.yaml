@@ -1,11 +1,4 @@
 management:
-  otlp:
-    metrics:
-      export:
-        enabled: false
-    tracing:
-      export:
-        enabled: false
   endpoints:
     web:
       exposure:
@@ -16,7 +9,7 @@ management:
 
 spring:
   config:
-    import: "aws-secretsmanager:lebvest/app-secrets"
+    import: "aws-secretsmanager:${APP_SECRETS_NAME:lebvest/app-secrets}"
   rabbitmq:
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
@@ -39,7 +32,7 @@ spring:
       s3:
         path-style-access-enabled: true
       region:
-        static: us-east-1
+        static: ${AWS_REGION:us-east-1}
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -48,7 +41,6 @@ spring:
     url: ${POSTGRES_URL}
   flyway:
     enabled: true
-    locations: classpath:db/migration
   jpa:
     hibernate:
       ddl-auto: validate
@@ -62,25 +54,6 @@ app:
     exchanges:
       investor-emails: lebvest.x.investor-emails
       admin-emails: lebvest.x.admin-emails
-  s3:
-    bucket-name: lebvest-bucket
   mail:
-    ## to be changed
     from: ${MAIL_FROM}
     admin-email: ${ADMIN_EMAIL}
-    subjects:
-      investor-signup-confirmation: "LebVest – Your Signup Application Has Been Received"
-      admin-signup-notification: "LebVest – New Investor Signup Application"
-    titles:
-      investor-signup-confirmation: "Application Received"
-      admin-signup-notification: "New Investor Application"
-  template:
-    styles-path: static/styles
-    mails-path: /templates/mails
-  frontend:
-    ## to be changed
-    base-url: http://localhost:4200
-
-server:
-  servlet:
-    context-path: /api/v1

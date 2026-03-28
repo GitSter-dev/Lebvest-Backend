@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.jknack</groupId>
+  <artifactId>handlebars.java</artifactId>
+  <version>4.5.0</version>
+  <packaging>pom</packaging>
+
+  <name>Handlebars.java</name>
+  <description>Logic-less and semantic templates with Java</description>
+
+  <url>https://github.com/jknack/handlebars.java</url>
+
+  <modules>
+    <module>handlebars</module>
+    <module>handlebars-helpers</module>
+    <module>handlebars-springmvc</module>
+    <module>handlebars-jackson</module>
+    <module>handlebars-guava-cache</module>
+    <module>handlebars-caffeine</module>
+    <module>handlebars-maven-plugin</module>
+    <module>handlebars-maven-plugin-tests</module>
+    <module>tests</module>
+  </modules>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>jknack</id>
+      <name>Edgar Espina</name>
+      <url>https://github.com/jknack</url>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git@github.com:jknack/handlebars.java.git</connection>
+    <developerConnection>scm:git:git@github.com:jknack/handlebars.java.git</developerConnection>
+    <url>scm:git:git@github.com:jknack/handlebars.java.git</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>central</id>
+      <name>Maven Central Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>central</id>
+      <name>Maven Central Release Repository</name>
+      <url>https://ossrh-staging-api.central.sonatype.com/service/local/</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.18.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.14.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <!-- Logging System -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>2.0.17</version>
+      </dependency>
+
+      <!-- Servlet API -->
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>6.1.0</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- Jackson 2.x -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson2-version}</version>
+      </dependency>
+
+      <!-- Test dependencies -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.5.18</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-params</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>2.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest</artifactId>
+        <version>3.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.0</version>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+      </plugin>
+
+      <!-- Javadoc -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.11.2</version>
+        <configuration>
+          <excludePackageNames>com.github.jknack.handlebars.internal.*</excludePackageNames>
+          <show>public</show>
+          <detectJavaApiLink>false</detectJavaApiLink>
+          <release>${maven.compiler.release}</release>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- sure-fire -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.3</version>
+        <configuration>
+          <!-- set default locale of the test JVM to en_US because some tests expect e.g. the dollar sign as currency symbol -->
+          <argLine>-Duser.language=en -Duser.country=US</argLine>
+          <useModulePath>false</useModulePath>
+          <includes>
+            <include>**/*Test.java</include>
+            <include>**/Issue*.java</include>
+            <include>**/Hbs*.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/*BenchTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>4.3.0</version>
+      </plugin>
+
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.46.1</version>
+        <configuration>
+          <upToDateChecking>
+            <enabled>true</enabled>
+            <indexFile>tmp/spotless</indexFile>
+          </upToDateChecking>
+          <formats>
+            <!-- you can define as many formats as you want, each is independent -->
+            <format>
+              <!-- define the files to apply to -->
+              <includes>
+                <include>*.java</include>
+              </includes>
+              <!-- define the steps to apply to those files -->
+              <trimTrailingWhitespace/>
+              <endWithNewline/>
+            </format>
+          </formats>
+          <java>
+            <googleJavaFormat>
+              <reflowLongStrings>true</reflowLongStrings>
+            </googleJavaFormat>
+
+            <formatAnnotations />
+
+            <importOrder>
+              <order>java,javax,jakarta,org,</order>
+            </importOrder>
+
+            <licenseHeader>
+              <file>src${file.separator}etc${file.separator}LICENSE</file>
+            </licenseHeader>
+          </java>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>bench</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.3.0</version>
+            <inherited>false</inherited>
+            <configuration>
+              <includes>
+                <include>**/*BenchTest.java</include>
+              </includes>
+              <systemProperties>
+                <property>
+                  <name>run.bench</name>
+                  <value>true</value>
+                </property>
+              </systemProperties>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>mustache-specs</id>
+      <activation>
+        <file>
+          <missing>${mustache-specs}</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.5.1</version>
+            <executions>
+              <execution>
+                <phase>initialize</phase>
+                <id>mustache-specs</id>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <executable>git</executable>
+              <arguments>
+                <argument>submodule</argument>
+                <argument>update</argument>
+                <argument>--init</argument>
+                <argument>--recursive</argument>
+              </arguments>
+              <successCodes>
+                <successCode>0</successCode>
+                <!-- git submodule fails in child projects, just ignore the error and continue -->
+                <successCode>1</successCode>
+              </successCodes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>spotless-hook</id>
+      <activation>
+        <file>
+          <exists>${pre-commit-hook}</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>${maven-antrun-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>formatter.sh</id>
+                <phase>initialize</phase>
+                <configuration>
+                  <target>
+                    <chmod file="${pre-commit-hook}" perm="755"/>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Git Hooks -->
+          <plugin>
+            <groupId>com.rudikershaw.gitbuildhook</groupId>
+            <artifactId>git-build-hook-maven-plugin</artifactId>
+            <version>3.5.0</version>
+            <configuration>
+              <installHooks>
+                <pre-commit>${pre-commit-hook}</pre-commit>
+              </installHooks>
+            </configuration>
+            <executions>
+              <execution>
+                <id>install-hooks</id>
+                <goals>
+                  <goal>install</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>central</id>
+      <build>
+        <plugins>
+          <!-- Source -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- GPG -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.8.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>module-info.shade</id>
+      <activation>
+        <file>
+          <exists>src${file.separator}etc${file.separator}module-info.activator</exists>
+        </file>
+      </activation>
+      <properties>
+        <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>${maven-antrun-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>module-info.shade</id>
+                <phase>process-resources</phase>
+                <configuration>
+                  <target>
+                    <property name="input" value="src${file.separator}main${file.separator}java${file.separator}module-info.java" />
+                    <copy file="${input}" tofile="${module-info.shade}"/>
+                    <replaceregexp file="${module-info.shade}" match="(// SHADED:).*" flags="s"  replace="}" />
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.moditect</groupId>
+            <artifactId>moditect-maven-plugin</artifactId>
+            <version>1.2.2.Final</version>
+            <executions>
+              <execution>
+                <id>add-module-infos</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>add-module-info</goal>
+                </goals>
+                <configuration>
+                  <overwriteExistingFiles>true</overwriteExistingFiles>
+                  <failOnWarning>false</failOnWarning>
+                  <module>
+                    <moduleInfoFile>${module-info.shade}</moduleInfoFile>
+                  </module>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+  <properties>
+    <!-- Encoding UTF-8 -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jackson2-version>2.19.2</jackson2-version>
+    <spring.version>6.2.9</spring.version>
+    <jacoco.version>0.8.12</jacoco.version>
+    <antlr-version>4.13.1</antlr-version>
+    <mockito.version>5.18.0</mockito.version>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssa</maven.build.timestamp.format>
+    <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.release>17</maven.compiler.release>
+    <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+    <pre-commit-hook>src${file.separator}etc${file.separator}formatter.sh</pre-commit-hook>
+    <mustache-specs>handlebars${file.separator}src${file.separator}test${file.separator}resources${file.separator}mustache</mustache-specs>
+    <junit.version>5.13.4</junit.version>
+  </properties>
+</project>

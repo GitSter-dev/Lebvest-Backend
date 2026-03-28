@@ -1,15 +1,11 @@
 services:
   app:
-    image: ${DOCKERHUB_USERNAME}/lebvest:${IMAGE_TAG:-latest}
+    image: ${IMAGE_NAME}
     container_name: lebvest
+    env_file:
+      - /opt/lebvest/.env.infrastructure
     environment:
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
     ports:
       - '8080:8080'
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:8080/api/v1/actuator/health"]
-      interval: 15s
-      timeout: 5s
-      start_period: 30s
-      retries: 3

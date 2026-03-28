@@ -6,3 +6,32 @@ spring:
       enabled: false
   flyway:
     locations: classpath:db/migration
+
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+    tracing:
+      export:
+        enabled: false
+
+server:
+  servlet:
+    context-path: /api/v1
+
+app:
+  s3:
+    bucket-name: ${APP_S3_BUCKET_NAME:lebvest-assets}
+  mail:
+    subjects:
+      investor-signup-confirmation: "LebVest - Your Signup Application Has Been Received"
+      admin-signup-notification: "LebVest - New Investor Signup Application"
+    titles:
+      investor-signup-confirmation: "Application Received"
+      admin-signup-notification: "New Investor Application"
+  template:
+    styles-path: static/styles
+    mails-path: /templates/mails
+  frontend:
+    base-url: ${FRONTEND_BASE_URL:http://localhost:4200}

@@ -43,6 +43,7 @@ services:
      depends_on:
        - postgres
        - minio
+       - mailpit
 
 volumes:
   pg_data:

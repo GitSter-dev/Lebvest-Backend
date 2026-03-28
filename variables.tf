@@ -23,8 +23,21 @@ variable "ec2_instance_type" {
 }
 
 variable "ec2_key_pair_name" {
-  description = "Name of your existing EC2 key pair for SSH access"
+  description = "Optional EC2 key pair name for legacy SSH access"
   type        = string
+  default     = ""
+}
+
+variable "enable_ssh_access" {
+  description = "Whether to open SSH ingress and attach an EC2 key pair"
+  type        = bool
+  default     = false
+}
+
+variable "ssh_ingress_cidr" {
+  description = "CIDR allowed to reach SSH when enable_ssh_access is true"
+  type        = string
+  default     = "0.0.0.0/0"
 }
 
 variable "docker_compose_version" {
@@ -112,4 +125,10 @@ variable "mail_from" {
 variable "admin_email" {
   description = "Admin notification recipient"
   type        = string
+}
+
+variable "frontend_base_url" {
+  description = "Frontend base URL injected into the production app runtime"
+  type        = string
+  default     = "http://localhost:4200"
 }

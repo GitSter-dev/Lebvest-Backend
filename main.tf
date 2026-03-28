@@ -74,12 +74,15 @@ resource "aws_security_group" "ec2" {
   description = "EC2 security group"
   vpc_id      = aws_vpc.main.id
 
-  ingress {
-    description = "SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # restrict to your IP in prod
+  dynamic "ingress" {
+    for_each = var.enable_ssh_access ? [1] : []
+    content {
+      description = "SSH"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = [var.ssh_ingress_cidr]
+    }
   }
 
   ingress {
@@ -273,6 +276,11 @@ resource "aws_iam_role_policy_attachment" "ec2_app" {
   policy_arn = aws_iam_policy.ec2_app.arn
 }
 
+resource "aws_iam_role_policy_attachment" "ec2_ssm" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_instance_profile" "ec2" {
   name = "${var.app_name}-ec2-profile"
   role = aws_iam_role.ec2.name
@@ -288,7 +296,7 @@ resource "aws_instance" "app" {
   subnet_id              = aws_subnet.public_a.id
   vpc_security_group_ids = [aws_security_group.ec2.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2.name
-  key_name               = var.ec2_key_pair_name
+  key_name               = var.ec2_key_pair_name != "" ? var.ec2_key_pair_name : null
 
   root_block_device {
     volume_size = 20
@@ -299,16 +307,28 @@ resource "aws_instance" "app" {
     #!/bin/bash
     set -euo pipefail
     yum update -y
-    yum install -y docker
-    systemctl start docker
-    systemctl enable docker
+    yum install -y amazon-ssm-agent curl docker
+    systemctl enable --now amazon-ssm-agent
+    systemctl enable --now docker
     usermod -aG docker ec2-user
+    install -d -m 0755 -o ec2-user -g ec2-user /opt/lebvest
     curl -fsSL "https://github.com/docker/compose/releases/download/${var.docker_compose_version}/docker-compose-linux-$(uname -m)" \
       -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
+    cat <<'ENVEOF' > /opt/lebvest/.env.infrastructure
+    APP_SECRETS_NAME=${var.app_name}/app-secrets
+    APP_S3_BUCKET_NAME=${var.s3_bucket_name}
+    AWS_REGION=${var.aws_region}
+    FRONTEND_BASE_URL=${var.frontend_base_url}
+    SPRING_PROFILES_ACTIVE=prod
+    ENVEOF
+    chown ec2-user:ec2-user /opt/lebvest/.env.infrastructure
   EOF
 
-  tags = { Name = "${var.app_name}-ec2" }
+  tags = {
+    Name         = "${var.app_name}-ec2"
+    DeployTarget = "prod"
+  }
 }
 
 # ─────────────────────────────────────────

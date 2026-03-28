@@ -4,19 +4,35 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 env:
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/lebvest
+  DEPLOY_TARGET: prod
+  IMAGE_REPOSITORY: ${{ secrets.DOCKERHUB_USERNAME }}/lebvest
   IMAGE_TAG: ${{ github.sha }}
-  # Keep in sync with Terraform variable docker_compose_version (variables.tf).
-  DOCKER_COMPOSE_VERSION: v2.29.7
 
 jobs:
-  # ── 1. Integration tests (prod profile) ────────────────────────────
-   
+  verify:
+    name: Verify Build
+    runs-on: ubuntu-latest
 
-  # ── 2. Build & push Docker image ───────────────────────────────────
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run Maven verify
+        run: ./mvnw -B verify
+
   docker-push:
     name: Build & Push to Docker Hub
+    needs: verify
     runs-on: ubuntu-latest
 
     steps:
@@ -29,93 +45,129 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build image
-        run: docker build -f Dockerfile.prod -t "$IMAGE_NAME:$IMAGE_TAG" -t "$IMAGE_NAME:latest" .
+        run: docker build -f Dockerfile.prod -t "$IMAGE_REPOSITORY:$IMAGE_TAG" -t "$IMAGE_REPOSITORY:latest" .
 
       - name: Push image
         run: |
-          docker push "$IMAGE_NAME:$IMAGE_TAG"
-          docker push "$IMAGE_NAME:latest"
+          docker push "$IMAGE_REPOSITORY:$IMAGE_TAG"
+          docker push "$IMAGE_REPOSITORY:latest"
 
-  # ── 3. Deploy to EC2 (app reads secrets from AWS Secrets Manager) ──
   deploy:
     name: Deploy to EC2
     needs: docker-push
     runs-on: ubuntu-latest
-    env:
-      IMAGE_TAG: ${{ github.sha }}
-      EC2_HOST: ${{ secrets.EC2_HOST }}
-      EC2_USER: ${{ secrets.EC2_USER }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure SSH
-        run: |
-          umask 077
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2.pem
-          chmod 600 ~/.ssh/ec2.pem
-          echo -e "Host *\n  StrictHostKeyChecking no\n  IdentityFile ~/.ssh/ec2.pem" > ~/.ssh/config
-          chmod 600 ~/.ssh/config
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Verify EC2 SSH reachability
+      - name: Resolve production instance
         run: |
-          if ! timeout 8 bash -c "cat < /dev/null > /dev/tcp/${EC2_HOST}/22"; then
-            echo "Cannot reach ${EC2_HOST}:22 from GitHub runner."
-            echo "Check secrets.EC2_HOST, instance state/public IP, route table, NACL, and SG ingress for SSH."
+          INSTANCE_IDS="$(aws ec2 describe-instances \
+            --filters "Name=tag:DeployTarget,Values=${DEPLOY_TARGET}" "Name=instance-state-name,Values=running" \
+            --query 'Reservations[].Instances[].InstanceId' \
+            --output text)"
+          set -- ${INSTANCE_IDS}
+          if [ "$#" -ne 1 ] || [ -z "${1:-}" ] || [ "${1:-}" = "None" ]; then
+            echo "Expected exactly one running prod instance, got: ${INSTANCE_IDS:-none}"
             exit 1
           fi
+          echo "INSTANCE_ID=$1" >> "$GITHUB_ENV"
 
-      - name: Copy compose file to EC2
+      - name: Wait for SSM connectivity
         run: |
-          ssh "$EC2_USER@$EC2_HOST" 'mkdir -p ~/lebvest'
-          scp compose.prod.yaml "$EC2_USER@$EC2_HOST:~/lebvest/compose.prod.yaml"
-
-      - name: Pull image, stop old container, start new
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        run: |
-          ssh "$EC2_USER@$EC2_HOST" bash -s <<REMOTE
-          set -euo pipefail
-          cd ~/lebvest
-          export DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME}"
-          export IMAGE_TAG="${IMAGE_TAG}"
-          export DOCKER_COMPOSE_VERSION="${DOCKER_COMPOSE_VERSION}"
-          docker pull "\${DOCKERHUB_USERNAME}/lebvest:\${IMAGE_TAG}"
-          COMPOSE_BIN=/usr/local/bin/docker-compose
-          if docker compose version >/dev/null 2>&1; then
-            COMPOSE=(docker compose)
-          elif [ -x "\$COMPOSE_BIN" ]; then
-            COMPOSE=("\$COMPOSE_BIN")
-          elif command -v docker-compose >/dev/null 2>&1; then
-            COMPOSE=(docker-compose)
-          else
-            echo "Installing Docker Compose \${DOCKER_COMPOSE_VERSION} to \${COMPOSE_BIN}..."
-            curl -fsSL "https://github.com/docker/compose/releases/download/\${DOCKER_COMPOSE_VERSION}/docker-compose-linux-\$(uname -m)" -o /tmp/docker-compose
-            sudo mv /tmp/docker-compose "\$COMPOSE_BIN"
-            sudo chmod +x "\$COMPOSE_BIN"
-            COMPOSE=("\$COMPOSE_BIN")
-          fi
-          "\${COMPOSE[@]}" -f compose.prod.yaml down --remove-orphans || true
-          "\${COMPOSE[@]}" -f compose.prod.yaml up -d
-          REMOTE
-
-      - name: Poll for healthy container
-        run: |
-          echo "Waiting for app to become healthy…"
-          for i in $(seq 1 20); do
-            if ssh "$EC2_USER@$EC2_HOST" 'curl -sf http://localhost:8080/api/v1/actuator/health'; then
-              echo "Health check passed on attempt $i"
+          for attempt in $(seq 1 20); do
+            STATUS="$(aws ssm describe-instance-information \
+              --filters "Key=InstanceIds,Values=${INSTANCE_ID}" \
+              --query 'InstanceInformationList[0].PingStatus' \
+              --output text 2>/dev/null || true)"
+            if [ "${STATUS}" = "Online" ]; then
+              echo "SSM is online on attempt ${attempt}"
               exit 0
             fi
-            echo "Attempt $i: not healthy yet, retrying in 15s…"
+            echo "Attempt ${attempt}: SSM not ready yet"
             sleep 15
           done
-          echo "Health check failed after 20 attempts"
-          ssh "$EC2_USER@$EC2_HOST" 'docker logs lebvest --tail 50'
+          echo "SSM agent did not come online in time"
           exit 1
 
-      - name: Clean up SSH key
-        if: always()
+      - name: Run deployment via SSM
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          rm -f ~/.ssh/ec2.pem ~/.ssh/config
+          COMPOSE_B64="$(base64 -w0 compose.prod.yaml)"
+          SCRIPT_B64="$(base64 -w0 scripts/deploy-prod.sh)"
+          IMAGE_NAME="${IMAGE_REPOSITORY}:${IMAGE_TAG}"
+
+          cat > command-input.json <<EOF
+          {
+            "DocumentName": "AWS-RunShellScript",
+            "InstanceIds": ["${INSTANCE_ID}"],
+            "Comment": "Deploy ${IMAGE_NAME}",
+            "Parameters": {
+              "commands": [
+                "set -euo pipefail",
+                "sudo mkdir -p /opt/lebvest",
+                "echo '${COMPOSE_B64}' | base64 -d | sudo tee /opt/lebvest/compose.prod.yaml >/dev/null",
+                "echo '${SCRIPT_B64}' | base64 -d | sudo tee /opt/lebvest/deploy-prod.sh >/dev/null",
+                "sudo chmod 755 /opt/lebvest/deploy-prod.sh",
+                "sudo chown ec2-user:ec2-user /opt/lebvest/compose.prod.yaml /opt/lebvest/deploy-prod.sh",
+                "export IMAGE_NAME='${IMAGE_NAME}'",
+                "export DOCKERHUB_USERNAME='${DOCKERHUB_USERNAME}'",
+                "export DOCKERHUB_TOKEN='${DOCKERHUB_TOKEN}'",
+                "/opt/lebvest/deploy-prod.sh"
+              ]
+            }
+          }
+          EOF
+
+          COMMAND_ID="$(aws ssm send-command \
+            --cli-input-json file://command-input.json \
+            --query 'Command.CommandId' \
+            --output text)"
+          echo "COMMAND_ID=${COMMAND_ID}" >> "$GITHUB_ENV"
+
+      - name: Wait for deployment result
+        run: |
+          for attempt in $(seq 1 40); do
+            STATUS="$(aws ssm get-command-invocation \
+              --command-id "${COMMAND_ID}" \
+              --instance-id "${INSTANCE_ID}" \
+              --query 'Status' \
+              --output text 2>/dev/null || true)"
+            case "${STATUS}" in
+              Success)
+                aws ssm get-command-invocation \
+                  --command-id "${COMMAND_ID}" \
+                  --instance-id "${INSTANCE_ID}" \
+                  --query 'StandardOutputContent' \
+                  --output text
+                exit 0
+                ;;
+              Failed|Cancelled|TimedOut)
+                aws ssm get-command-invocation \
+                  --command-id "${COMMAND_ID}" \
+                  --instance-id "${INSTANCE_ID}" \
+                  --query 'StandardErrorContent' \
+                  --output text
+                exit 1
+                ;;
+              Pending|InProgress|Delayed|"")
+                echo "Attempt ${attempt}: deployment status is ${STATUS:-Unknown}"
+                sleep 15
+                ;;
+              *)
+                echo "Unexpected deployment status: ${STATUS}"
+                sleep 15
+                ;;
+            esac
+          done
+          echo "Deployment command did not finish in time"
+          exit 1

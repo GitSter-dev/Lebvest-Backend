@@ -1,8 +1,11 @@
 aws_region        = "us-east-1"
 app_name          = "lebvest"
 ec2_instance_type = "t3.small"
-ec2_key_pair_name = "your-pem-key"
 ec2_ami           = "ami-0c02fb55956c7d316" # Amazon Linux 2023, us-east-1
+enable_ssh_access = false
+# Set both fields only if you want legacy SSH access in addition to SSM.
+# ec2_key_pair_name = "your-pem-key"
+# ssh_ingress_cidr  = "203.0.113.10/32"
 
 rds_instance_class = "db.t3.micro"
 db_name            = "lebvest"
@@ -21,3 +24,4 @@ mail_username = "your-smtp-user"
 mail_password = "CHANGE_ME"
 mail_from     = "noreply@example.com"
 admin_email   = "admin@example.com"
+frontend_base_url = "https://app.example.com"

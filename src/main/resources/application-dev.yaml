@@ -1,18 +1,6 @@
-management:
-  otlp:
-    metrics:
-      export:
-        enabled: false
-  tracing:
-    export:
-      enabled: false
-
-server:
-  servlet:
-    context-path: /api/v1
-
 spring:
   autoconfigure:
+    # Dev runs without RabbitMQ and uses direct mail sending instead.
     exclude: org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration
 
   application:
@@ -32,7 +20,7 @@ spring:
         endpoint: http://localhost:9000
         path-style-access-enabled: true
       region:
-        static: us-east-1
+        static: ${AWS_REGION:us-east-1}
       credentials:
         access-key: ${MINIO_ROOT_USER}
         secret-key: ${MINIO_ROOT_PASSWORD}
@@ -46,19 +34,6 @@ spring:
           starttls:
             enabled: false
 app:
-  s3:
-    bucket-name: lebvest-bucket
   mail:
     from: noreply@lebvest.com
     admin-email: admin@lebvest.com
-    subjects:
-      investor-signup-confirmation: "LebVest – Your Signup Application Has Been Received"
-      admin-signup-notification: "LebVest – New Investor Signup Application"
-    titles:
-      investor-signup-confirmation: "Application Received"
-      admin-signup-notification: "New Investor Application"
-  template:
-    styles-path: static/styles
-    mails-path: /templates/mails
-  frontend:
-    base-url: http://localhost:4200
