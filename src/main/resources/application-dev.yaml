@@ -1,0 +1,17 @@
+server:
+  servlet:
+    context-path: /api/v1
+
+spring:
+  datasource:
+    username: admin
+    password: secret
+    url: jdbc:postgresql://localhost:5460/lebvest
+  flyway:
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  docker:
+    compose:
+      enabled: false

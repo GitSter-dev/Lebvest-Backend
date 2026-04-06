@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: lebvest
+  profiles:
+    active: dev
