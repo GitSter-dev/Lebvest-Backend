@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.providers.AwsRegionProvider;
+import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Configuration
@@ -27,11 +28,18 @@ public class S3Config {
                                 credsProperties.getSecretKey()
                         )
                 ))
-                .region(regionProvider.getRegion());
+                .region(regionProvider.getRegion())
+                ;
 
         // for dev only
         if (s3Properties.getEndpoint() != null) {
-            builder.endpointOverride(s3Properties.getEndpoint());
+            builder.endpointOverride(s3Properties.getEndpoint())
+                    .serviceConfiguration(
+                            S3Configuration.builder()
+                                    .pathStyleAccessEnabled(true)
+                                    .build()
+                    );
+            ;
         }
 
         return builder.build();

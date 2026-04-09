@@ -18,9 +18,23 @@ spring:
   cloud:
     aws:
       credentials:
-        secret-key: secret
-        access-key: access
+        access-key: minioadmin
+        secret-key: minioadmin123
       s3:
-        path-style-access-enabled: false
+        path-style-access-enabled: true
         endpoint: http://localhost:9000
         region: us-east-1
+  rabbitmq:
+    virtual-host: /
+    port: 5672
+    host: localhost
+
+  mail:
+    port: 1025
+    host: localhost
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enabled: false

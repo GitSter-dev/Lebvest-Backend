@@ -20,7 +20,7 @@ import java.util.UUID;
 public class InvestorApplicationService {
 
     private final InvestorApplicationRepository investorApplicationRepository;
-    private static final String INVESTOR_DOCUMENTS_PATH_PREFIX = "investor_documents/pending";
+    private static final String INVESTOR_DOCUMENTS_PATH_PREFIX = "investor-documents/pending";
     private final S3Service s3Service;
 
     @Transactional
@@ -49,7 +49,6 @@ public class InvestorApplicationService {
         application.setAddressProofDocumentKey(addressKey);
         investorApplicationRepository.save(application);
 
-        // TODO: replace with real presigned URLs once object storage is integrated
         var data = InvestorApplicationResponseDto.builder()
                 .identityDocumentPresignedUrl(s3Service.presignUrl(identityKey).url().toString())
                 .addressProofDocumentPresignedUrl(s3Service.presignUrl(addressKey).url().toString())

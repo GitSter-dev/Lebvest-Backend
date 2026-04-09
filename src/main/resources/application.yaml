@@ -3,3 +3,15 @@ spring:
     name: lebvest
   profiles:
     active: dev
+
+lebvest:
+  messaging:
+    exchanges:
+      investor-events: investor.events
+      admin-events: admin.events
+    queues:
+      investor-application-to-investor-emails: notification.email.investor.investor-application-recieved
+      investor-application-to-admin-emails: notification.email.admin.new-investor-application
+    routing-keys:
+      investor-application-to-investor-email-sent: investor-application-to-investor-email.sent
+      investor-application-to-admin-email-sent: investor-application-to-admin-email.sent
