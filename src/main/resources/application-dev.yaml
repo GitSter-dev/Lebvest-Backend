@@ -15,3 +15,12 @@ spring:
   docker:
     compose:
       enabled: false
+  cloud:
+    aws:
+      credentials:
+        secret-key: secret
+        access-key: access
+      s3:
+        path-style-access-enabled: false
+        endpoint: http://localhost:9000
+        region: us-east-1

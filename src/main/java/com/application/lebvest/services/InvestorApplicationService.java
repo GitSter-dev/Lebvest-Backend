@@ -6,6 +6,7 @@ import com.application.lebvest.models.dtos.InvestorApplicationRequestDto;
 import com.application.lebvest.models.dtos.InvestorApplicationResponseDto;
 import com.application.lebvest.models.entities.InvestorApplication;
 import com.application.lebvest.models.enums.InvestorApplicationStatus;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,9 @@ public class InvestorApplicationService {
 
     private final InvestorApplicationRepository investorApplicationRepository;
     private static final String INVESTOR_DOCUMENTS_PATH_PREFIX = "investor_documents/pending";
+    private final S3Service s3Service;
 
+    @Transactional
     public ApiResponseDto<InvestorApplicationResponseDto> apply(
             InvestorApplicationRequestDto req
     ) {
@@ -48,8 +51,8 @@ public class InvestorApplicationService {
 
         // TODO: replace with real presigned URLs once object storage is integrated
         var data = InvestorApplicationResponseDto.builder()
-                .identityDocumentPresignedUrl("pending-presign:" + identityKey)
-                .addressProofDocumentPresignedUrl("pending-presign:" + addressKey)
+                .identityDocumentPresignedUrl(s3Service.presignUrl(identityKey).url().toString())
+                .addressProofDocumentPresignedUrl(s3Service.presignUrl(addressKey).url().toString())
                 .build();
 
         //TODO: Send emails

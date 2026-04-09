@@ -4,7 +4,9 @@ import com.application.lebvest.models.enums.InvestorApplicationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 
@@ -40,7 +42,8 @@ public class InvestorApplication {
     private String addressProofDocumentKey;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "investor_application_status")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Builder.Default
     private InvestorApplicationStatus applicationStatus = InvestorApplicationStatus.PENDING;
 
