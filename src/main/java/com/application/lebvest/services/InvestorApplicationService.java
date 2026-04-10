@@ -12,8 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,8 @@ public class InvestorApplicationService {
     private final InvestorApplicationRepository investorApplicationRepository;
     private static final String INVESTOR_DOCUMENTS_PATH_PREFIX = "investor-documents/pending";
     private final S3Service s3Service;
+    private final Clock clock;
+    private final Supplier<UUID> uuidSupplier;
 
     @Transactional
     public ApiResponseDto<InvestorApplicationResponseDto> apply(
@@ -58,10 +62,13 @@ public class InvestorApplicationService {
         return ApiResponseDto.ok(HttpStatus.CREATED.value(), data);
     }
 
-    private String generateDocumentKey(String filename, Long requestId) {
-        LocalDate d = LocalDate.now();
+    public String generateDocumentKey(String filename, Long requestId) {
+        if (filename == null || requestId == null) {
+            throw new RuntimeException("filename and requestId must not be null");
+        }
+        LocalDate d = LocalDate.now(clock);
         String baseName = normalizeFilename(filename);
-        String objectId = UUID.randomUUID().toString();
+        String objectId = uuidSupplier.get().toString();
         return String.format(
                 "%s/%04d/%02d/%02d/%d/%s_%s",
                 INVESTOR_DOCUMENTS_PATH_PREFIX,
@@ -74,7 +81,7 @@ public class InvestorApplicationService {
         );
     }
 
-    private static String normalizeFilename(String filename) {
+    public static String normalizeFilename(String filename) {
         if (filename == null || filename.isBlank()) {
             return "file";
         }
