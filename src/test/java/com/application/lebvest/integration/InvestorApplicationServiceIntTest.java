@@ -2,6 +2,7 @@ package com.application.lebvest.integration;
 
 import com.application.lebvest.repositories.InvestorApplicationRepository;
 import com.application.lebvest.TestcontainersConfiguration;
+import com.application.lebvest.repositories.SetPasswordTokenRepository;
 import com.application.lebvest.services.HandlebarsRendererService;
 import com.application.lebvest.services.MailService;
 import com.application.lebvest.services.S3Service;
@@ -47,8 +48,12 @@ class InvestorApplicationServiceIntTest {
     @MockitoBean
     HandlebarsRendererService handlebarsRendererService;
 
+    @Autowired
+    SetPasswordTokenRepository setPasswordTokenRepository;
+
     @BeforeEach
     void setUp() {
+        setPasswordTokenRepository.deleteAll();
         investorApplicationRepository.deleteAll();
     }
 

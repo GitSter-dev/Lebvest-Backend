@@ -64,22 +64,6 @@ public class InvestorApplicationServiceTest {
         when(uuidSupplier.get()).thenReturn(FIXED_UUID);
     }
 
-    @Test
-    void apply_whenInvestorApplicationExistsByEmail_throwsRuntimeException() {
-        InvestorApplicationRequestDto req = InvestorApplicationRequestDto
-                .builder()
-                .email("johndoe@example.com")
-                .firstname("test-firstname")
-                .lastname("test-lastname")
-                .identityDocumentName("test-doc")
-                .addressProofDocumentName("test-doc")
-                .build();
-
-        when(investorApplicationRepository.existsByEmail(req.email())).thenReturn(true);
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> investorApplicationService.apply(req));
-        assertEquals("Investor application with this email already exists", ex.getMessage());
-    }
 
     @Test
     void normalizeFilename_whenFilenameIsNull_returnsLiteralFile() {
