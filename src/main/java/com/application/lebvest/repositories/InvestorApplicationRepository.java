@@ -1,4 +1,4 @@
-package com.application.lebvest;
+package com.application.lebvest.repositories;
 
 import com.application.lebvest.models.entities.InvestorApplication;
 import org.springframework.data.jpa.repository.JpaRepository;

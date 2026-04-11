@@ -1,0 +1,31 @@
+{{#> layout subject="Application Received — Lebvest"}}
+    {{#*inline "body"}}
+
+        <h2>Thank you, {{firstname}}.</h2>
+        <p>We have received your investor application, and it is currently under review. Our team will get back to you shortly.</p>
+
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 32px 0; width: 100%;">
+            <tr>
+                <td class="detail-card">
+                    <p class="detail-label">Full Name</p>
+                    <p class="detail-value">{{firstname}} {{lastname}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-top: 12px;">
+                    <p class="detail-label">Email Address</p>
+                    <p class="detail-value">{{email}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-top: 12px;">
+                    <p class="detail-label">Application Status</p>
+                    <p class="status-badge">Under Review</p>
+                </td>
+            </tr>
+        </table>
+
+        <p class="note">If you have any questions in the meantime, feel free to reach out to our support team. We typically respond within 1–2 business days.</p>
+
+    {{/inline}}
+{{/layout}}

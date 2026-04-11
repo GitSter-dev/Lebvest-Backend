@@ -1,9 +1,13 @@
 package com.application.lebvest.unit;
 
-import com.application.lebvest.InvestorApplicationRepository;
+import com.application.lebvest.repositories.InvestorApplicationRepository;
+import com.application.lebvest.configs.AdminProperties;
 import com.application.lebvest.models.dtos.InvestorApplicationRequestDto;
+import com.application.lebvest.producers.InvestorEventsProducer;
+import com.application.lebvest.services.HandlebarsRendererService;
 import com.application.lebvest.services.InvestorApplicationService;
 import com.application.lebvest.services.S3Service;
+import com.application.lebvest.services.StylesLoaderService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,17 +29,30 @@ public class InvestorApplicationServiceTest {
     @InjectMocks
     InvestorApplicationService investorApplicationService;
 
-    @Mock
-    S3Service s3Service;
 
     @Mock
     InvestorApplicationRepository investorApplicationRepository;
+
+    @Mock
+    S3Service s3Service;
 
     @Mock
     Clock clock;
 
     @Mock
     Supplier<UUID> uuidSupplier;
+
+    @Mock
+    InvestorEventsProducer investorEventsProducer;
+
+    @Mock
+    HandlebarsRendererService handlebarsRendererService;
+
+    @Mock
+    StylesLoaderService stylesLoaderService;
+
+    @Mock
+    AdminProperties adminProperties;
 
     private static final LocalDate FIXED_DATE = LocalDate.of(2025, 6, 15);
     private static final UUID FIXED_UUID = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");

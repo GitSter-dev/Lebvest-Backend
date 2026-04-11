@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <title>{{subject}}</title>
+    <style>
+            {{styles}}
+    </style>
+</head>
+<body>
+
+<table class="email-wrapper" role="presentation" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center">
+            <table class="email-container" role="presentation" cellspacing="0" cellpadding="0">
+
+                <tr>
+                    <td class="email-header">
+                        <span class="email-logo">Lebvest</span>
+                        {{#if headerTagline}}
+                            <p class="email-tagline">{{headerTagline}}</p>
+                        {{/if}}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="email-body">
+                        {{> body}}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="email-footer">
+                        <p>© {{year}} Lebvest. All rights reserved.</p>
+                        {{#if footerNote}}
+                            <p class="email-footer-note">{{footerNote}}</p>
+                        {{/if}}
+
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

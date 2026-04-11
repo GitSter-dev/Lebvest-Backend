@@ -2,6 +2,8 @@ package com.application.lebvest.configs;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,6 +51,11 @@ public class RabbitConfig {
                 .bind(investorApplicationToInvestorEmailsQueue())
                 .to(investorEventsExchange())
                 .with(messaging.routingKeys().investorApplicationToInvestorEmailSent());
+    }
+
+    @Bean
+    public MessageConverter jackson2JsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 
     @Bean

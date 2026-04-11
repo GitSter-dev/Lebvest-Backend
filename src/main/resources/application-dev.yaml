@@ -38,3 +38,6 @@ spring:
           auth: false
           starttls:
             enabled: false
+lebvest:
+  frontend-url: http://localhost:4200
+  set-password-token-secret: 1b76b0e9f5f782cf5b55b8e194190c523360a91b66a0cd16c2a1344d14446aff

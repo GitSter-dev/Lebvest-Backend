@@ -26,6 +26,7 @@ services:
       - minio_data:/data
     command: server /data --console-address ":9001"
 
+
   rabbitmq:
     image: rabbitmq
     container_name: rabbitmq

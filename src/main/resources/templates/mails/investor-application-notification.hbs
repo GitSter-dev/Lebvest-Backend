@@ -1,0 +1,45 @@
+{{#> layout subject="New Investor Application — Lebvest"}}
+    {{#*inline "body"}}
+
+        <h2>Hi {{adminName}}, a new application has been submitted.</h2>
+        <p>A new investor application requires your review. Details are listed below.</p>
+
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 32px 0; width: 100%;">
+            <tr>
+                <td class="detail-card">
+                    <p class="detail-label">Full Name</p>
+                    <p class="detail-value">{{firstname}} {{lastname}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-top: 12px;">
+                    <p class="detail-label">Email Address</p>
+                    <p class="detail-value">{{email}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-top: 12px;">
+                    <p class="detail-label">Submitted At</p>
+                    <p class="detail-value">{{submittedAt}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-top: 12px;">
+                    <p class="detail-label">Status</p>
+                    <p class="status-badge">Pending Review</p>
+                </td>
+            </tr>
+        </table>
+
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 24px 0;">
+            <tr>
+                <td class="action-btn-wrapper">
+                    <a href="{{applicationUrl}}" class="action-btn">Review Application</a>
+                </td>
+            </tr>
+        </table>
+
+        <p class="note">This is an automated notification. Please do not reply to this email.</p>
+
+    {{/inline}}
+{{/layout}}

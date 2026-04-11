@@ -15,3 +15,9 @@ lebvest:
     routing-keys:
       investor-application-to-investor-email-sent: investor-application-to-investor-email.sent
       investor-application-to-admin-email-sent: investor-application-to-admin-email.sent
+  admin:
+    email: admin@lebvest.com
+    name: Admin
+handlebars:
+  prefix: classpath:templates/mails/
+  suffix: .hbs
