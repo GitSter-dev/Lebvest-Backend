@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 
 import java.net.URI;
@@ -41,6 +42,9 @@ class InvestorApplicationServiceIntTest {
     // Mock away the services that need MinIO / Mailpit / Handlebars
     @MockitoBean
     S3Service s3Service;
+
+    @MockitoBean
+    S3Presigner s3Presigner;
 
     @MockitoBean
     MailService mailService;
