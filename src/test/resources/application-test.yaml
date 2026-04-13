@@ -8,6 +8,9 @@ server:
   servlet:
     context-path: /
 
+# Note: OS env LEBVEST_ADMIN_JWT_SECRET overrides this file. An empty env value (common
+# when a repo secret is declared but unset) breaks startup; CI sets a non-empty secret in
+# .github/workflows/integration-tests.yml.
 lebvest:
   admin:
     jwt:
