@@ -1,0 +1,27 @@
+{{#> layout subject="Application Approved — Lebvest"}}
+    {{#*inline "body"}}
+
+        <h2>Congratulations, {{firstname}}.</h2>
+        <p>Your investor application has been approved. To activate your investor account, please set your password using the secure link below.</p>
+
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 24px 0;">
+            <tr>
+                <td class="action-btn-wrapper">
+                    <a href="{{setPasswordUrl}}" class="action-btn">Set Password</a>
+                </td>
+            </tr>
+        </table>
+
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 32px 0; width: 100%;">
+            <tr>
+                <td style="padding-top: 12px;">
+                    <p class="detail-label">Application Status</p>
+                    <p class="status-badge">Approved</p>
+                </td>
+            </tr>
+        </table>
+
+        <p class="note">For your security, this link expires after 24 hours and can only be used once.</p>
+
+    {{/inline}}
+{{/layout}}

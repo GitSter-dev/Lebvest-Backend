@@ -19,6 +19,12 @@ public class InvestorEventsProducer {
     public void publishInvestorApplicationToInvestorEmailEvent(
             InvestorEvents.InvestorApplicationToInvestorEmailsEvent event
     ) {
+        publishInvestorEmailEvent(event);
+    }
+
+    public void publishInvestorEmailEvent(
+            InvestorEvents.InvestorApplicationToInvestorEmailsEvent event
+    ) {
         log.debug("Publishing investor email event to exchange={} routingKey={}",
                 messaging.exchanges().investorEvents(),
                 messaging.routingKeys().investorApplicationToInvestorEmailSent());
@@ -30,6 +36,12 @@ public class InvestorEventsProducer {
     }
 
     public void publishInvestorApplicationToAdminEmailEvent(
+            AdminEvents.InvestorApplicationToAdminEmailsEvent event
+    ) {
+        publishAdminEmailEvent(event);
+    }
+
+    public void publishAdminEmailEvent(
             AdminEvents.InvestorApplicationToAdminEmailsEvent event
     ) {
         log.debug("Publishing admin email event to exchange={} routingKey={}",

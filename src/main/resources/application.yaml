@@ -3,7 +3,8 @@ spring:
     name: lebvest
   profiles:
     active: dev
-
+  jackson:
+    default-property-inclusion: non_null
 lebvest:
   messaging:
     exchanges:

@@ -10,7 +10,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Collections;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -27,6 +26,54 @@ public class GlobalErrorHandler {
                                 409,
                                 ApiErrorDto
                                         .builder()
+                                        .message(ex.getMessage())
+                                        .build()
+                        )
+                );
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponseDto<Object>> handleResourceNotFoundException(
+            ResourceNotFoundException ex
+    ) {
+        return ResponseEntity
+                .status(404)
+                .body(
+                        ApiResponseDto.error(
+                                404,
+                                ApiErrorDto.builder()
+                                        .message(ex.getMessage())
+                                        .build()
+                        )
+                );
+    }
+
+    @ExceptionHandler({BadRequestException.class, IllegalArgumentException.class})
+    public ResponseEntity<ApiResponseDto<Object>> handleBadRequestException(
+            RuntimeException ex
+    ) {
+        return ResponseEntity
+                .badRequest()
+                .body(
+                        ApiResponseDto.error(
+                                400,
+                                ApiErrorDto.builder()
+                                        .message(ex.getMessage())
+                                        .build()
+                        )
+                );
+    }
+
+    @ExceptionHandler(InvalidStateException.class)
+    public ResponseEntity<ApiResponseDto<Object>> handleInvalidStateException(
+            InvalidStateException ex
+    ) {
+        return ResponseEntity
+                .status(409)
+                .body(
+                        ApiResponseDto.error(
+                                409,
+                                ApiErrorDto.builder()
                                         .message(ex.getMessage())
                                         .build()
                         )

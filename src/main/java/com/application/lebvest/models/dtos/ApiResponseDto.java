@@ -1,44 +1,42 @@
 package com.application.lebvest.models.dtos;
 
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+import lombok.*;
 
 import java.time.Instant;
 
-
+@Getter
 @Builder
-public record ApiResponseDto<T>(
-        @NotBlank
-        Integer statusCode,
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ApiResponseDto<T> {
 
-        T data,
+    @NotNull
+    private Integer statusCode;
 
-        @NotNull
-        Instant timestamp,
-        ApiErrorDto error
-) {
+    private T data;
 
-    public static <T> ApiResponseDto<T> ok(
-            Integer statusCode,
-            T data
-    ) {
-        return ApiResponseDto
-                .<T>builder()
+    @NotNull
+    private Instant timestamp;
+
+    private ApiErrorDto error;
+
+    public static <T> ApiResponseDto<T> ok(Integer statusCode, T data) {
+        return ApiResponseDto.<T>builder()
+                .statusCode(statusCode)
                 .data(data)
                 .timestamp(Instant.now())
-                .statusCode(statusCode)
                 .build();
     }
 
-    public static ApiResponseDto<Object> error(
-            Integer statusCode,
-            ApiErrorDto error
-    ) {
-        return ApiResponseDto
-                .builder()
+    public static <T> ApiResponseDto<T> error(Integer statusCode, ApiErrorDto error) {
+        return ApiResponseDto.<T>builder()
                 .statusCode(statusCode)
                 .error(error)
+                .timestamp(Instant.now())
                 .build();
     }
 }

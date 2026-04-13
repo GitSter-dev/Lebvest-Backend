@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.temporal.TemporalAmount;
 
 @Slf4j
 @Component
@@ -17,6 +16,7 @@ public class SetPasswordTokenCleanup {
 
     private final SetPasswordTokenRepository setPasswordTokenRepository;
     private final Clock clock;
+
     @Scheduled(cron = "0 0 0 * * *")
     public void cleanupSetPasswordTokens() {
         Instant cutoff = Instant.now(clock).minusSeconds(86400);

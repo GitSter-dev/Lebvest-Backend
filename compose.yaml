@@ -1,4 +1,34 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lebvest-app
+    depends_on:
+      - postgres
+      - minio
+      - rabbitmq
+      - mailpit
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lebvest
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: secret
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      SPRING_MAIL_HOST: mailpit
+      SPRING_MAIL_PORT: 1025
+      SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY: minioadmin
+      SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY: minioadmin123
+      SPRING_CLOUD_AWS_S3_ENDPOINT: http://minio:9000
+      SPRING_CLOUD_AWS_S3_REGION: us-east-1
+      SPRING_CLOUD_AWS_S3_PATH_STYLE_ACCESS_ENABLED: "true"
+      LEBVEST_FRONTEND_URL: http://localhost:4200
+      LEBVEST_SET_PASSWORD_TOKEN_SECRET: 1b76b0e9f5f782cf5b55b8e194190c523360a91b66a0cd16c2a1344d14446aff
+    ports:
+      - "8080:8080"
+
   postgres:
     image: 'postgres:16'
     container_name: postgres
