@@ -17,6 +17,11 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * JWT encoder/decoder for admin (and investor login) tokens. Startup fails here if
+ * {@code lebvest.admin.jwt.secret} is missing or blank—often because {@code LEBVEST_ADMIN_JWT_SECRET}
+ * is set to an empty string in the environment, which overrides values in application YAML.
+ */
 @Configuration
 @RequiredArgsConstructor
 public class AdminJwtBeans {
@@ -27,10 +32,16 @@ public class AdminJwtBeans {
     void validateJwtSecret() {
         AdminProperties.Jwt jwt = adminProperties.jwt();
         if (jwt == null || jwt.secret() == null || jwt.secret().isBlank()) {
-            throw new IllegalStateException("lebvest.admin.jwt.secret must be configured");
+            throw new IllegalStateException(
+                    "lebvest.admin.jwt.secret is missing or blank (bean adminJwtBeans @PostConstruct). "
+                            + "Unset LEBVEST_ADMIN_JWT_SECRET or set it to a non-empty value of at least 32 UTF-8 bytes; "
+                            + "an empty env var overrides application-test.yaml / application.yaml defaults."
+            );
         }
         if (jwt.secret().getBytes(StandardCharsets.UTF_8).length < 32) {
-            throw new IllegalStateException("lebvest.admin.jwt.secret must be at least 32 bytes for HS256");
+            throw new IllegalStateException(
+                    "lebvest.admin.jwt.secret must be at least 32 UTF-8 bytes for HS256 (bean adminJwtBeans @PostConstruct)."
+            );
         }
     }
 
