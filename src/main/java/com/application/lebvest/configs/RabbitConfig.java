@@ -54,6 +54,13 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Queue adminNotificationsQueue() {
+        return QueueBuilder
+                .durable(messaging.queues().adminNotifications())
+                .build();
+    }
+
+    @Bean
     public MessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
@@ -64,5 +71,13 @@ public class RabbitConfig {
                 .bind(investorApplicationToAdminEmailsQueue())
                 .to(adminEventsExchange())
                 .with(messaging.routingKeys().investorApplicationToAdminEmailSent());
+    }
+
+    @Bean
+    public Binding adminNotificationsBinding() {
+        return BindingBuilder
+                .bind(adminNotificationsQueue())
+                .to(adminEventsExchange())
+                .with(messaging.routingKeys().adminNotificationCreated());
     }
 }

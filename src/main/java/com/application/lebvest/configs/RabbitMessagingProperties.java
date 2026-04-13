@@ -12,12 +12,17 @@ public record RabbitMessagingProperties(
     public record Exchanges(String investorEvents, String adminEvents) {
     }
 
-    public record Queues(String investorApplicationToInvestorEmails, String investorApplicationToAdminEmails) {
+    public record Queues(
+            String investorApplicationToInvestorEmails,
+            String investorApplicationToAdminEmails,
+            String adminNotifications
+    ) {
     }
 
     public record RoutingKeys(
             String investorApplicationToInvestorEmailSent,
-            String investorApplicationToAdminEmailSent
+            String investorApplicationToAdminEmailSent,
+            String adminNotificationCreated
     ) {
     }
 }

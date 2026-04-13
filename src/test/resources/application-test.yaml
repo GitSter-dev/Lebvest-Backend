@@ -1,0 +1,15 @@
+spring:
+  docker:
+    compose:
+      enabled: false
+
+# Dev profile sets /api/v1; integration tests call MockMvc without that prefix.
+server:
+  servlet:
+    context-path: /
+
+lebvest:
+  admin:
+    jwt:
+      secret: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      expiration: PT1H

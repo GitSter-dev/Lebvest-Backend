@@ -5,7 +5,10 @@ import com.application.lebvest.models.dtos.ApiResponseDto;
 import com.application.lebvest.models.dtos.InvestorApplicationRequestDto;
 import com.application.lebvest.models.dtos.InvestorApplicationResponseDto;
 import com.application.lebvest.models.entities.InvestorApplication;
+import com.application.lebvest.models.enums.AdminNotificationType;
 import com.application.lebvest.models.enums.InvestorApplicationStatus;
+import com.application.lebvest.models.events.AdminEvents;
+import com.application.lebvest.producers.AdminEventsProducer;
 import com.application.lebvest.repositories.InvestorApplicationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.text.Normalizer;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -29,6 +33,7 @@ public class InvestorApplicationService {
     private final Clock clock;
     private final Supplier<UUID> uuidSupplier;
     private final InvestorApplicationEmailService investorApplicationEmailService;
+    private final AdminEventsProducer adminEventsProducer;
 
     private static final String INVESTOR_DOCUMENTS_PATH_PREFIX = "investor-documents/pending";
 
@@ -69,6 +74,13 @@ public class InvestorApplicationService {
         log.info("Investor confirmation email event published for email={}", application.getEmail());
         investorApplicationEmailService.sendAdminApplicationNotification(application);
         log.info("Admin notification email event published for application id={}", application.getId());
+
+        adminEventsProducer.publishAdminNotificationEvent(new AdminEvents.AdminNotificationEvent(
+                "New investor application",
+                application.getFirstname() + " " + application.getLastname() + " (" + application.getEmail() + ") submitted an application.",
+                AdminNotificationType.NEW_APPLICATION,
+                Map.of("applicationId", application.getId(), "email", application.getEmail())
+        ));
 
         return ApiResponseDto.ok(HttpStatus.CREATED.value(), data);
     }

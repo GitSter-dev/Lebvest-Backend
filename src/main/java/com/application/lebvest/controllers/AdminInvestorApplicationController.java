@@ -2,6 +2,7 @@ package com.application.lebvest.controllers;
 
 import com.application.lebvest.models.dtos.ApiResponseDto;
 import com.application.lebvest.models.dtos.InvestorApplicationDecisionResponseDto;
+import com.application.lebvest.models.dtos.InvestorApplicationListItemDto;
 import com.application.lebvest.models.dtos.SwaggerApiResponses;
 import com.application.lebvest.services.AdminInvestorApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,10 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/investor-applications")
@@ -25,6 +25,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminInvestorApplicationController {
 
     private final AdminInvestorApplicationService adminInvestorApplicationService;
+
+    @GetMapping
+    @Operation(summary = "List all investor applications")
+    public ResponseEntity<ApiResponseDto<List<InvestorApplicationListItemDto>>> listApplications() {
+        var list = adminInvestorApplicationService.listApplications();
+        return ResponseEntity.ok(ApiResponseDto.ok(HttpStatus.OK.value(), list));
+    }
+
+    @GetMapping("/{applicationId}")
+    @Operation(summary = "Get investor application by ID")
+    public ResponseEntity<ApiResponseDto<InvestorApplicationListItemDto>> getApplication(
+            @PathVariable Long applicationId
+    ) {
+        var dto = adminInvestorApplicationService.getApplicationById(applicationId);
+        return ResponseEntity.ok(ApiResponseDto.ok(HttpStatus.OK.value(), dto));
+    }
 
     @PostMapping("/{applicationId}/accept")
     @Operation(

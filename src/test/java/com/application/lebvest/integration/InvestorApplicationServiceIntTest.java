@@ -1,10 +1,12 @@
 package com.application.lebvest.integration;
 
 import com.application.lebvest.TestcontainersConfiguration;
+import com.application.lebvest.models.entities.AdminUser;
 import com.application.lebvest.models.entities.InvestorAccount;
 import com.application.lebvest.models.entities.InvestorApplication;
 import com.application.lebvest.models.entities.SetPasswordToken;
 import com.application.lebvest.models.enums.InvestorApplicationStatus;
+import com.application.lebvest.repositories.AdminUserRepository;
 import com.application.lebvest.repositories.InvestorAccountRepository;
 import com.application.lebvest.repositories.InvestorApplicationRepository;
 import com.application.lebvest.repositories.SetPasswordTokenRepository;
@@ -12,13 +14,19 @@ import com.application.lebvest.services.HandlebarsRendererService;
 import com.application.lebvest.services.MailService;
 import com.application.lebvest.services.S3Service;
 import com.application.lebvest.services.SetPasswordTokenService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -39,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@ActiveProfiles({"dev", "test"})
 class InvestorApplicationServiceIntTest {
 
     @Autowired
@@ -54,10 +63,15 @@ class InvestorApplicationServiceIntTest {
     SetPasswordTokenRepository setPasswordTokenRepository;
 
     @Autowired
+    AdminUserRepository adminUserRepository;
+
+    @Autowired
     SetPasswordTokenService setPasswordTokenService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    private static final ObjectMapper TEST_JSON = testObjectMapper();
 
     // Mock away the services that need MinIO / Mailpit / Handlebars
     @MockitoBean
@@ -72,11 +86,24 @@ class InvestorApplicationServiceIntTest {
     @MockitoBean
     HandlebarsRendererService handlebarsRendererService;
 
+    private static final String ADMIN_EMAIL = "admin@lebvest.com";
+    private static final String ADMIN_PASSWORD = "IntegrationTestAdminPwd1";
+
     @BeforeEach
     void setUp() {
         investorAccountRepository.deleteAll();
         setPasswordTokenRepository.deleteAll();
         investorApplicationRepository.deleteAll();
+        adminUserRepository.deleteAll();
+        adminUserRepository.saveAndFlush(
+                AdminUser.builder()
+                        .email(ADMIN_EMAIL)
+                        .name("Admin")
+                        .passwordHash(passwordEncoder.encode(ADMIN_PASSWORD))
+                        .role("ADMIN")
+                        .enabled(true)
+                        .build()
+        );
         when(handlebarsRendererService.renderTemplate(anyString(), anyMap())).thenReturn("<html/>");
     }
 
@@ -146,7 +173,8 @@ class InvestorApplicationServiceIntTest {
     void acceptInvestorApplication_whenPending_createsTokenAndMarksAccepted() throws Exception {
         InvestorApplication application = saveApplication("approved@example.com", InvestorApplicationStatus.PENDING);
 
-        mockMvc.perform(post("/admin/investor-applications/{applicationId}/accept", application.getId()))
+        mockMvc.perform(post("/admin/investor-applications/{applicationId}/accept", application.getId())
+                        .header(HttpHeaders.AUTHORIZATION, bearerToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusCode").value(200))
                 .andExpect(jsonPath("$.data.applicationStatus").value("ACCEPTED"));
@@ -154,6 +182,16 @@ class InvestorApplicationServiceIntTest {
         InvestorApplication persisted = investorApplicationRepository.findById(application.getId()).orElseThrow();
         assertThat(persisted.getApplicationStatus()).isEqualTo(InvestorApplicationStatus.ACCEPTED);
         assertThat(setPasswordTokenRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    void createSetPasswordUrl_whenApplicationAccepted_usesCleanFrontendRoute() {
+        InvestorApplication application = saveApplication("link@example.com", InvestorApplicationStatus.ACCEPTED);
+
+        String setPasswordUrl = setPasswordTokenService.createSetPasswordUrl(application);
+
+        assertThat(setPasswordUrl).startsWith("http://localhost:4200/set-password?token=");
+        assertThat(setPasswordUrl).doesNotContain("/investor-applications/");
     }
 
     @Test
@@ -166,7 +204,8 @@ class InvestorApplicationServiceIntTest {
                         .build()
         );
 
-        mockMvc.perform(post("/admin/investor-applications/{applicationId}/reject", application.getId()))
+        mockMvc.perform(post("/admin/investor-applications/{applicationId}/reject", application.getId())
+                        .header(HttpHeaders.AUTHORIZATION, bearerToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusCode").value(200))
                 .andExpect(jsonPath("$.data.applicationStatus").value("REJECTED"));
@@ -257,6 +296,26 @@ class InvestorApplicationServiceIntTest {
 
     private String extractToken(String setPasswordUrl) {
         return setPasswordUrl.substring(setPasswordUrl.indexOf("token=") + 6);
+    }
+
+    private String bearerToken() throws Exception {
+        var mvcResult = mockMvc.perform(post("/admin/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"email":"%s","password":"%s"}
+                                """.formatted(ADMIN_EMAIL, ADMIN_PASSWORD)))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode root = TEST_JSON.readTree(mvcResult.getResponse().getContentAsString());
+        String accessToken = root.path("data").path("accessToken").asText();
+        return "Bearer " + accessToken;
+    }
+
+    private static ObjectMapper testObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return mapper;
     }
 
 }

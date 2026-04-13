@@ -1,6 +1,8 @@
 package com.application.lebvest.controllers;
 
 import com.application.lebvest.models.dtos.ApiResponseDto;
+import com.application.lebvest.models.dtos.InvestorAuthTokenPayloadDto;
+import com.application.lebvest.models.dtos.InvestorLoginRequestDto;
 import com.application.lebvest.models.dtos.InvestorSetPasswordRequestDto;
 import com.application.lebvest.models.dtos.InvestorSetPasswordResponseDto;
 import com.application.lebvest.models.dtos.SwaggerApiResponses;
@@ -27,6 +29,41 @@ import org.springframework.web.bind.annotation.RestController;
 public class InvestorAuthController {
 
     private final InvestorAuthService investorAuthService;
+
+    @PostMapping("/login")
+    @Operation(
+            summary = "Investor login",
+            description = "Issues a JWT for the investor SPA after email and password verification."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Login successful",
+                    content = @Content(
+                            schema = @Schema(implementation = SwaggerApiResponses.InvestorLoginResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Request validation failed",
+                    content = @Content(
+                            schema = @Schema(implementation = SwaggerApiResponses.BadRequestResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Invalid email or password",
+                    content = @Content(
+                            schema = @Schema(implementation = SwaggerApiResponses.UnauthorizedResponse.class)
+                    )
+            )
+    })
+    public ResponseEntity<ApiResponseDto<InvestorAuthTokenPayloadDto>> login(
+            @Valid @RequestBody InvestorLoginRequestDto request
+    ) {
+        log.info("Investor login requested");
+        return ResponseEntity.status(HttpStatus.OK).body(investorAuthService.login(request));
+    }
 
     @PostMapping("/set-password")
     @Operation(

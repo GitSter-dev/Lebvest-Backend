@@ -46,7 +46,7 @@ public class SetPasswordTokenService {
                 .build();
         setPasswordTokenRepository.save(setPasswordToken);
 
-        return frontendUrl + "/investor-applications/" + application.getId() + "?token=" + token;
+        return frontendUrl + "/set-password?token=" + token;
     }
 
     public SetPasswordToken getValidatedToken(String token) {

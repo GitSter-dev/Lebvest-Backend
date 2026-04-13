@@ -73,6 +73,42 @@ public class SwaggerApiResponses {
     }
 
     @Schema(
+            name = "InvestorLoginResponse",
+            description = "Successful investor login with JWT payload",
+            example = """
+            {
+              "statusCode": 200,
+              "timestamp": "2026-04-13T16:45:00Z",
+              "data": {
+                "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+                "tokenType": "Bearer",
+                "expiresAt": "2026-04-13T17:00:00Z",
+                "email": "investor@example.com",
+                "role": "INVESTOR"
+              }
+            }
+            """
+    )
+    public static class InvestorLoginResponse extends ApiResponseDto<InvestorAuthTokenPayloadDto> {
+    }
+
+    @Schema(
+            name = "UnauthorizedResponse",
+            description = "Unauthorized — invalid credentials or missing authentication",
+            example = """
+            {
+              "statusCode": 401,
+              "timestamp": "2026-04-13T16:45:00Z",
+              "error": {
+                "message": "Invalid email or password"
+              }
+            }
+            """
+    )
+    public static class UnauthorizedResponse extends ApiResponseDto<Void> {
+    }
+
+    @Schema(
             name = "BadRequestResponse",
             description = "Bad request response",
             example = """

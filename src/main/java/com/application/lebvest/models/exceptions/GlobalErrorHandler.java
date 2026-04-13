@@ -15,6 +15,22 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalErrorHandler {
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponseDto<Object>> handleUnauthorizedException(
+            UnauthorizedException ex
+    ) {
+        return ResponseEntity
+                .status(401)
+                .body(
+                        ApiResponseDto.error(
+                                401,
+                                ApiErrorDto.builder()
+                                        .message(ex.getMessage())
+                                        .build()
+                        )
+                );
+    }
+
     @ExceptionHandler(ResourceConflictException.class)
     public ResponseEntity<ApiResponseDto<Object>> handleResourceConflictException(
             ResourceConflictException ex

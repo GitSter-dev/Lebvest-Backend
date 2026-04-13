@@ -13,12 +13,17 @@ lebvest:
     queues:
       investor-application-to-investor-emails: notification.email.investor.investor-application-recieved
       investor-application-to-admin-emails: notification.email.admin.new-investor-application
+      admin-notifications: notification.admin.in-app
     routing-keys:
       investor-application-to-investor-email-sent: investor-application-to-investor-email.sent
       investor-application-to-admin-email-sent: investor-application-to-admin-email.sent
+      admin-notification-created: admin-notification.created
   admin:
     email: admin@lebvest.com
     name: Admin
+    jwt:
+      secret: "${LEBVEST_ADMIN_JWT_SECRET:012345678901234567890123456789012345678901234567890123456789012}"
+      expiration: PT15M
 handlebars:
   prefix: classpath:templates/mails/
   suffix: .hbs
