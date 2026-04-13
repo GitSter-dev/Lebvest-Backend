@@ -17,8 +17,7 @@ jobs:
     name: Run Integration Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    # GitHub may expose LEBVEST_ADMIN_JWT_SECRET from org/repo secrets. An empty value
-    # overrides application-test.yaml and breaks AdminJwtBeans; force a dev-only secret.
+    # Belt-and-suspenders: pom.xml Surefire also sets -Dlebvest.admin.jwt.secret (beats empty env).
     env:
       LEBVEST_ADMIN_JWT_SECRET: 012345678901234567890123456789012345678901234567890123456789012
 

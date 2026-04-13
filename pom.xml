@@ -28,6 +28,8 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <!-- Non-production secret for tests only; Surefire passes this so empty LEBVEST_ADMIN_JWT_SECRET in CI cannot blank out JWT config (Spring env beats YAML but system props beat env). -->
+        <lebvest.test.jwt.secret>012345678901234567890123456789012345678901234567890123456789012</lebvest.test.jwt.secret>
     </properties>
     <dependencies>
         <dependency>
@@ -213,7 +215,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    <argLine>-javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED -Dlebvest.admin.jwt.secret=${lebvest.test.jwt.secret}</argLine>
                 </configuration>
             </plugin>
 
