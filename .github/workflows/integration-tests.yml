@@ -4,14 +4,19 @@ on:
     branches:
       - "feat/**"
       - "dev"
+      - "master"
+      - "main"
   pull_request:
     branches:
       - "dev"
+      - "master"
+      - "main"
 
 jobs:
   integration-tests:
     name: Run Integration Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code
@@ -26,3 +31,6 @@ jobs:
 
       - name: Run integration tests
         run: mvn test -Dtest="com.application.lebvest.integration.**" -DfailIfNoTests=false
+
+      - name: Package application (skip tests)
+        run: mvn -B package -DskipTests

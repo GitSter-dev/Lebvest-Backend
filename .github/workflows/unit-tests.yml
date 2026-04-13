@@ -5,14 +5,19 @@ on:
     branches:
       - "feat/**"
       - "dev"
+      - "master"
+      - "main"
   pull_request:
     branches:
       - "dev"
+      - "master"
+      - "main"
 
 jobs:
   unit-tests:
     name: Run Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code
