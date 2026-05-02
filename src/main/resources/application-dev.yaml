@@ -7,3 +7,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+aws:
+  s3:
+    endpoint: http://localhost:9000
+    region: us-east-1
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket: lebvest-docs
+    presigned-url-expiry-minutes: 15

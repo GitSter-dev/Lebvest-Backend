@@ -1,10 +1,7 @@
 package com.application.auth_lebvest.models.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Table(name = "investor_applications")
 @Entity
@@ -12,6 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class InvestorApplication {
 
     @Id
@@ -20,10 +18,6 @@ public class InvestorApplication {
     sequenceName = "investor_application_id_seq",
     allocationSize = 1)
     private Long investorApplicationId;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
 
     private String identityDocumentKey;
 
